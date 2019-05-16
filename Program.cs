@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Sheets.v4;
-
+using Google.Apis.Sheets.v4.Data;
 
 namespace GoogleSheetsAndCsharp
 {
@@ -28,6 +29,7 @@ namespace GoogleSheetsAndCsharp
             });
 
             ReadEntries();
+            CreateEntry();
         }
 
         static void ReadEntries()
@@ -49,6 +51,19 @@ namespace GoogleSheetsAndCsharp
                 Console.WriteLine("No Data found.");
             }
 
+        }
+
+        static void CreateEntry()
+        {
+            var range = $"{sheet}!A:F";
+            var valueRange = new ValueRange();
+
+            var objectList = new List<object>() { "Hello!", "This", "was", "inserted", "via", "C#" };
+            valueRange.Values = new List<IList<object>> { objectList };
+
+            var appendRequest = service.Spreadsheets.Values.Append(valueRange, SpreadsheetId, range);
+            appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
+            var appendResponse = appendRequest.Execute();
         }
     }
 }

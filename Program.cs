@@ -9,6 +9,9 @@ namespace GoogleSheetsAndCsharp
 {
     class Program
     {
+        // Created following
+        // https://www.youtube.com/watch?v=afTiNU6EoA8&feature=youtu.be
+
         static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
         static readonly string ApplicationName = "Legislators";
         static readonly string SpreadsheetId = "1Z4qmu8ErL6RVq3kqEzTbSp8KZWizJGSpfTO0mRB_qjk"; //from URL
@@ -30,6 +33,8 @@ namespace GoogleSheetsAndCsharp
 
             ReadEntries();
             CreateEntry();
+            UpdateEntry();
+            DeleteEntry();
         }
 
         static void ReadEntries()
@@ -64,6 +69,29 @@ namespace GoogleSheetsAndCsharp
             var appendRequest = service.Spreadsheets.Values.Append(valueRange, SpreadsheetId, range);
             appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
             var appendResponse = appendRequest.Execute();
+        }
+
+        static void UpdateEntry()
+        {
+            var range = $"{sheet}!A2";
+            var valueRange = new ValueRange();
+
+            var objectList = new List<object>() { "Updated!" };
+            valueRange.Values = new List<IList<object>> { objectList };
+
+            var updateRequest = service.Spreadsheets.Values.Update(valueRange, SpreadsheetId, range);
+            updateRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
+            var updateResponse = updateRequest.Execute();
+
+        }
+
+        static void DeleteEntry()
+        {
+            var range = $"{sheet}!A543:F";
+            var requestBody = new ClearValuesRequest();
+
+            var deleteRequest = service.Spreadsheets.Values.Clear(requestBody, SpreadsheetId, range);
+            var deleteResponse = deleteRequest.Execute();
         }
     }
 }
